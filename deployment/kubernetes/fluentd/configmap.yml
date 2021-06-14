@@ -12,6 +12,7 @@ data:
         @id         in_all
         @label      @mainstream
         port        24224
+        bind        0.0.0.0
     </source>
 
     <filter **>
@@ -32,7 +33,7 @@ data:
 
         # fluent-plugin-grafana-loki: https://grafana.com/docs/loki/latest/clients/fluentd/
         <match **>
-            @type loki          "http://loki:3100"
+            @type loki          "http://fluentd-persistence:3100"
             extra_labels        {"env":"dev"}
             flush_interval      10s
             flush_at_shutdown   true

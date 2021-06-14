@@ -1,0 +1,5 @@
+resources:
+  - persistent-volume-claim.yml
+  - configmap.yml
+  - deployment.yml
+  - service.yml

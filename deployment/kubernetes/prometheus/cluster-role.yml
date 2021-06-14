@@ -4,8 +4,7 @@ kind: ClusterRole
 metadata:
   name: prometheus
 rules:
-  - apiGroups:
-      - ""
+  - apiGroups: [""]
     resources:
       - pods
       - services
@@ -26,7 +25,7 @@ rules:
       - list
       - match
 
-  - nonResourcesURLs:
+  - nonResourceURLs:
       - /metrics
     verbs:
       - get

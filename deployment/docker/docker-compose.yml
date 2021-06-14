@@ -14,7 +14,7 @@ services:
             - ES_JAVA_OPTS=-Xms512m -Xmx512m
             - xpack.security.enabled=false
         volumes:
-            - ./data/elsearch:/usr/share/elasticsearch/data
+            - esdata:/usr/share/elasticsearch/data
 
     jaeger-collector:
         image: jaegertracing/jaeger-collector
@@ -58,7 +58,7 @@ services:
 ## Metrics | Prometheus - Micrometer
 
     prometheus:
-        build: ./../../architecture/prometheus
+        build: ./../../resources/prometheus
         image: jhordycg/observability-example-prometheus
         ports:
             - 9090:9090
@@ -69,7 +69,7 @@ services:
             - 3000:3000
         user: "472"
         volumes:
-            - ./../../architecture/grafana/provisioning:/etc/grafana/provisioning
+            - ./../../resources/grafana/provisioning:/etc/grafana/provisioning
 
 ## Logger | Fluentd - Loki
 
@@ -79,14 +79,13 @@ services:
             - 3100:3100
 
     fluentd:
-        build: ./../../architecture/fluentd
+        build: ./../../resources/fluentd
         ports:
             - 24224:24224/tcp
             - 24224:24224/udp
             - 5140:5140/tcp
         volumes:
-            - ./data/fluentd/fluent.conf:/fluentd/etc/fluent.conf
-            - ./data/fluentd/log:/fluentd/log:rw
+            - ./../../resources/fluentd/fluent.conf:/fluentd/etc/fluent.conf
         user: root
         depends_on:
             - loki

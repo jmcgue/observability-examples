@@ -23,7 +23,7 @@ spec:
 #The port number that make the service visible outside the cluster
 #Port range available minikube 30000-32767
 ###########################################
-    nodePort : 30000 
+    nodePort : 30000
 ###########################################
 #The port on define on the pod that the request gets send to
 ###########################################

@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: fluentd
+  namespace: kube-system
+  labels:
+    k8s-app: fluentd-logging
+    name: fluentd
+spec:
+  selector:
+    matchLabels:
+      k8s-app: fluentd-logging
+      name: fluentd
+  template:
+    metadata:
+      labels:
+        k8s-app: fluentd-logging
+        name: fluentd
+    spec:
+      tolerations:
+        # this toleration is to have the daemonset runnable on master nodes
+        # remove it if your masters can't run pods
+        - key: node-role.kubernetes.io/master
+          #operator: Exists
+          effect: NoSchedule
+      containers:
+        - name: fluentd
+          image: jhordycg/observability-fluentd
+          ports:
+            - containerPort: 24224
+          volumeMounts:
+            - mountPath: /fluentd/log
+              name: fluentd-log
+            - mountPath: /fluentd/etc/fluent.conf
+              name: fluentd-config
+              readOnly: false
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - name: fluentd-log
+          emptyDir: {}
+        - name: fluentd-config
+          configMap:
+            defaultMode: 420
+            name: fluentd-config

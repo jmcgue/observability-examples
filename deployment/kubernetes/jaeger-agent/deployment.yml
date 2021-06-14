@@ -23,12 +23,11 @@ spec:
             - "--config.file=/etc/prometheus/prometheus.yml"
             - "--storage.tsdb.path=/prometheus/"
           ports:
-            ports:
-              - containerPort: 14271
-              - containerPort: 6831
-              - containerPort: 6832
-              - containerPort: 5778
-              - containerPort: 5775
+            - containerPort: 14271
+            - containerPort: 6831
+            - containerPort: 6832
+            - containerPort: 5778
+            - containerPort: 5775
           env:
             - name: REPORTER_GRPC_HOST_PORT
               value: "jaeger-collector:14250"

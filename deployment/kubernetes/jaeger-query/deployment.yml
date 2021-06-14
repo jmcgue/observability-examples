@@ -23,9 +23,8 @@ spec:
             - "--config.file=/etc/prometheus/prometheus.yml"
             - "--storage.tsdb.path=/prometheus/"
           ports:
-            ports:
-              - containerPort: 16686
-              - containerPort: 16687
+            - containerPort: 16686
+            - containerPort: 16687
           env:
             - name: SPAN_STORAGE_TYPE
               value: "elasticsearch"

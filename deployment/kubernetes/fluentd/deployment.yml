@@ -17,21 +17,10 @@ spec:
     spec:
       containers:
         - name: fluentd
-          image: jaegertracing/jaeger-query
-          args:
-            - "--storage.tsdb.retention.time=12h"
-            - "--config.file=/etc/prometheus/prometheus.yml"
-            - "--storage.tsdb.path=/prometheus/"
+          image: jhordycg/observability-fluentd
           ports:
-            ports:
-              - containerPort: 24224
-              - containerPort: 24224
-              - containerPort: 5140
-          env:
-            - name: SPAN_STORAGE_TYPE
-              value: "elasticsearch"
-            - name: ES_SERVER_URLS
-              value: "http://jaeger-elsearch:9200"
+            - containerPort: 24224
+            - containerPort: 5140
           volumeMounts:
           - mountPath: /fluentd/log
             name: fluentd-log

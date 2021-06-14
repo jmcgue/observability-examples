@@ -19,5 +19,4 @@ spec:
         - name: loki
           image: grafana/loki
           ports:
-            ports:
-              - containerPort: 3100
+            - containerPort: 3100

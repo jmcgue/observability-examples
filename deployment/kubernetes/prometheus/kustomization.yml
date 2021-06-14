@@ -1,0 +1,7 @@
+resources:
+  - namespace.yml
+  - cluster-role.yml
+  - cluster-role-binding.yml
+  - configmap.yml
+  - deployment.yml
+  - service.yml
