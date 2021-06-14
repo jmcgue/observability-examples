@@ -1,0 +1,32 @@
+plugins {
+    id 'org.springframework.boot' version '2.5.0'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+}
+
+group = 'dev.jhordycg.examples.microservices.observability'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-hateoas'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+    // https://mvnrepository.com/artifact/io.opentracing.contrib/opentracing-spring-jaeger-web-starter
+    implementation 'io.opentracing.contrib:opentracing-spring-jaeger-web-starter:3.3.1' //v3.3.1
+    // https://mvnrepository.com/artifact/org.fluentd/fluent-logger
+    implementation 'org.fluentd:fluent-logger:0.3.4'
+
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+test {
+    useJUnitPlatform()
+}

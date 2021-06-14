@@ -1,0 +1,6 @@
+server:
+  port: 8081
+
+opentracing:
+  jaeger:
+    service-name: secondApplication

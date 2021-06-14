@@ -1,0 +1,96 @@
+version: '3'
+services:
+
+## Tracing - Jaeger - Elasticsearch - OpenTracing
+
+    jaeger-elsearch:
+        image: elasticsearch:7.12.1
+        ports:
+            - 9200:9200
+            - 9300:9300
+        environment:
+            - discovery.type=single-node
+            - http.host=0.0.0.0
+            - ES_JAVA_OPTS=-Xms512m -Xmx512m
+            - xpack.security.enabled=false
+        volumes:
+            - ./data/elsearch:/usr/share/elasticsearch/data
+
+    jaeger-collector:
+        image: jaegertracing/jaeger-collector
+        ports:
+            - 14250:14250
+            - 14268:14268
+            - 14269:14269
+            - 9411:9411
+        environment:
+            - SPAN_STORAGE_TYPE=elasticsearch
+            - ES_SERVER_URLS=http://jaeger-elsearch:9200
+            - ES_NUM_SHARDS=1
+            - ES_NUM_REPLICAS=0
+        depends_on:
+            - jaeger-elsearch
+
+    jaeger-agent:
+        image: jaegertracing/jaeger-agent
+        ports:
+            - 14271:14271       # Metrics (/metrics) and Health check (/)
+            - 6831:6831/udp         # Jaeger client (more communs)
+            - 6832:6832/udp     # Jager client (nodejs and others)
+            - 5778:5778/tcp
+            - 5775:5775/udp
+        environment:
+            - REPORTER_GRPC_HOST_PORT=jaeger-collector:14250
+        depends_on:
+            - jaeger-collector
+
+    jaeger-query:
+        image: jaegertracing/jaeger-query
+        ports:
+            - 16686:16686       # Jaeger UI (/) and enpoints (/api/*) 
+            - 16687:16687       # Metrics (/metrics) and Health check (/)
+        environment:
+            - SPAN_STORAGE_TYPE=elasticsearch
+            - ES_SERVER_URLS=http://jaeger-elsearch:9200
+        depends_on:
+            - jaeger-elsearch
+
+## Metrics | Prometheus - Micrometer
+
+    prometheus:
+        build: ./../../architecture/prometheus
+        image: jhordycg/observability-example-prometheus
+        ports:
+            - 9090:9090
+
+    grafana:
+        image: grafana/grafana:7.5.7
+        ports:
+            - 3000:3000
+        user: "472"
+        volumes:
+            - ./../../architecture/grafana/provisioning:/etc/grafana/provisioning
+
+## Logger | Fluentd - Loki
+
+    loki:
+        image: grafana/loki
+        ports:
+            - 3100:3100
+
+    fluentd:
+        build: ./../../architecture/fluentd
+        ports:
+            - 24224:24224/tcp
+            - 24224:24224/udp
+            - 5140:5140/tcp
+        volumes:
+            - ./data/fluentd/fluent.conf:/fluentd/etc/fluent.conf
+            - ./data/fluentd/log:/fluentd/log:rw
+        user: root
+        depends_on:
+            - loki
+
+volumes:
+    esdata:
+        driver: local

@@ -1,0 +1,3 @@
+opentracing:
+  jaeger:
+    service-name: firtApplication

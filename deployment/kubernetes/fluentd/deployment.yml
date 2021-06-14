@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fluentd
+  namespace: monitoring
+  labels:
+    app: fluentd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fluentd
+  template:
+    metadata:
+      labels:
+        app: fluentd
+    spec:
+      containers:
+        - name: fluentd
+          image: jaegertracing/jaeger-query
+          args:
+            - "--storage.tsdb.retention.time=12h"
+            - "--config.file=/etc/prometheus/prometheus.yml"
+            - "--storage.tsdb.path=/prometheus/"
+          ports:
+            ports:
+              - containerPort: 24224
+              - containerPort: 24224
+              - containerPort: 5140
+          env:
+            - name: SPAN_STORAGE_TYPE
+              value: "elasticsearch"
+            - name: ES_SERVER_URLS
+              value: "http://jaeger-elsearch:9200"
+          volumeMounts:
+          - mountPath: /fluentd/log
+            name: fluentd-log
+          - mountPath: /fluentd/etc/fluent.conf
+            name: fluentd-config
+            readOnly: false
+      volumes:
+        - name: fluentd-log
+          emptyDir: {}
+        - name: fluentd-config
+          configMap:
+              defaultMode: 420
+              name: fluentd-config
+

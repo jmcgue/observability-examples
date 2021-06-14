@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jaeger-agent
+  namespace: monitoring
+  labels:
+    app: jaeger-agent
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jaeger-agent
+  template:
+    metadata:
+      labels:
+        app: jaeger-agent
+    spec:
+      containers:
+        - name: agent
+          image: jaegertracing/jaeger-agent
+          args:
+            - "--storage.tsdb.retention.time=12h"
+            - "--config.file=/etc/prometheus/prometheus.yml"
+            - "--storage.tsdb.path=/prometheus/"
+          ports:
+            ports:
+              - containerPort: 14271
+              - containerPort: 6831
+              - containerPort: 6832
+              - containerPort: 5778
+              - containerPort: 5775
+          env:
+            - name: REPORTER_GRPC_HOST_PORT
+              value: "jaeger-collector:14250"

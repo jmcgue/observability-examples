@@ -1,0 +1,36 @@
+# configurtion of alert manager
+# https://github.com/prometheus/alertmanager
+# https://www.prometheus.io/docs/alerting/latest/configuration/
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: alertmanager-config
+  namespace: monitoring
+data:
+  alertmanager.yml: |-
+    global:
+      resolve_timeout: 5m
+      slack_api_url: 'https://hooks.slack.com/services/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'
+
+    route:
+      group_by: ['alertname', 'priority']
+      group_wait: 30s
+      group_interval: 1m
+      #change to long interval in real production like 3h
+      repeat_interval: 1m
+      # A default receiver
+      receiver: default-receiver
+      routes:
+      - match:
+          severity: slack
+        receiver: default-receiver
+      - match: 
+          severity: warning
+        receiver: default-receiver
+    receivers:
+    - name: default-receiver
+      slack_configs:
+        - send_resolved: true
+          channel: '#observabilidad'
+          text: '{{ template "slack.default.text" . }}'
+          title: "{{ range .Alerts }}{{ .Annotations.summary }}\n{{ end }}"

@@ -1,0 +1,20 @@
+# Logger - Loki
+
+apiVersion: 1
+datasources:
+  - uid: uid_loki
+    editable: false
+    name: Loki Logger
+    type: loki
+    access: proxy
+    url: http://loki:3100
+    jsonData:
+      maxLines: 1000
+      derivedFields:
+        - datasourceUid: uid_jaeger
+          matcherRegex: "traceId=\"(\\w+)\""
+          name: TraceID
+          url: '$${__value.raw}'
+        - matcherRegex: "traceId=\"(\\w+)\""
+          name: TraceID
+          url: 'http://localhost:16686/trace/$${__value.raw}'

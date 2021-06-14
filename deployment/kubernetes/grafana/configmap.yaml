@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-datasources
+  namespace: monitoring
+
+data:
+  prometheus.yml: |-
+    apiVersion: 1
+    datasources:
+      - uid: uid_prometheus
+        editable: true
+        name: Prometheus Metrics
+        type: prometheus
+        access: proxy
+        httpMethod: POST
+        url: http://prometheus-service.monitoring.svc:8280
+        jsonData:
+          exemplarTraceIdDestinations:
+            - name: traceId
+              datasourceUid: uid_jaeger
+            - name: traceId
+              url: 'http://localhost:3000/explore?orgId=1&left=%5B%22now-1h%22,%22now%22,%22Jaeger%22,%7B%22query%22:%22$${__value.raw}%22%7D%5D'
+
+  loki.yml: |-
+    apiVersion: 1
+    datasources:
+      - uid: uid_loki
+        editable: true
+        name: Loki Logger
+        type: loki
+        access: proxy
+        url: http://loki:3100
+        jsonData:
+          maxLines: 1000
+          derivedFields:
+            - datasourceUid: uid_jaeger
+              matcherRegex: "traceId=\"(\\w+)\""
+              name: TraceID
+              url: '$${__value.raw}'
+            - matcherRegex: "traceId=\"(\\w+)\""
+              name: TraceID
+              url: 'http://localhost:16686/trace/$${__value.raw}'
+  
+  jaeger.yml: |-
+    apiVersion: 1
+    datasources:
+      - uid: uid_jaeger
+        editable: true
+        name: Jaeger Tracing
+        type: jaeger
+        url: http://jaeger-query:16686/
+        access: proxy
+        jsonData:
+          tracesToLogs:
+            datasourceUid: uid_loki

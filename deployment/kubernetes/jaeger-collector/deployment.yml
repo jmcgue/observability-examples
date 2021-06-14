@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jaeger-collector
+  namespace: monitoring
+  labels:
+    app: jaeger-collector
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jaeger-collector
+  template:
+    metadata:
+      labels:
+        app: jaeger-collector
+    spec:
+      containers:
+        - name: collector
+          image: jaegertracing/jaeger-collector
+          args:
+            - "--storage.tsdb.retention.time=12h"
+            - "--config.file=/etc/prometheus/prometheus.yml"
+            - "--storage.tsdb.path=/prometheus/"
+          ports:
+            ports:
+              - containerPort: 14250
+              - containerPort: 14268
+              - containerPort: 14269
+              - containerPort: 9411
+          env:
+            - name: SPAN_STORAGE_TYPE
+              value: "elasticsearch"
+            - name: ES_SERVER_URLS
+              value: "http://jaeger-elsearch:9200"
+            - name: ES_NUM_SHARDS
+              value: "1"
+            - name: ES_NUM_REPLICAS
+              value: "0"

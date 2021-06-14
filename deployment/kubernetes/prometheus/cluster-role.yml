@@ -1,0 +1,32 @@
+# Using RBAC Authorization: https://kubernetes.io/docs/reference/access-authn-authz/rbac
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: prometheus
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+      - services
+      - endpoints
+      - nodes/proxy
+      - nodes
+    verbs:
+      - get
+      - list
+      - match
+
+  - apiGroups:
+      - extensions
+    resources:
+      - ingresses
+    verbs:
+      - get
+      - list
+      - match
+
+  - nonResourcesURLs:
+      - /metrics
+    verbs:
+      - get

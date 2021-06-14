@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fluentd-persistence
+  namespace: monitoring
+  labels:
+    app: fluentd-persistence
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fluentd-persistence
+  template:
+    metadata:
+      labels:
+        app: fluentd-persistence
+    spec:
+      containers:
+        - name: loki
+          image: grafana/loki
+          ports:
+            ports:
+              - containerPort: 3100

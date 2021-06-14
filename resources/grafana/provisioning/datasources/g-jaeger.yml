@@ -1,0 +1,13 @@
+# Jaeger - Tracing
+
+apiVersion: 1
+datasources:
+  - uid: uid_jaeger
+    editable: false
+    name: Jaeger Tracing
+    type: jaeger
+    url: http://jaeger-query:16686/
+    access: proxy
+    jsonData:
+      tracesToLogs:
+        datasourceUid: uid_loki
